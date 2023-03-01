@@ -1,169 +1,201 @@
 var express = require('express');
 var router = express.Router();
-const userHelper=require('../model/userHelpers')
-const nocache=require('nocache');
+const userHelper = require('../model/userHelpers')
+const nocache = require('nocache');
 /* GET home page. */
 
-let verifyLogin=(req,res,next)=>{
-  let user=req.session.user
-  if(user){
+let verifyLogin = (req, res, next) => {
+  let user = req.session.user
+  if (user) {
     next()
-  }else{
+  } else {
     res.redirect('/login')
   }
 }
 
-router.get('/',nocache(), function(req, res, next) {
-  user=req.session.user
-  userHelper.latestProduct().then((product)=>{
-  res.render('user/index', {user,product});
+router.get('/', nocache(), async function (req, res, next) {
+  user = req.session.user
+  let cartCount = 0
+  if (user) {
+    let userId = req.session.user._id
+    cartCount = await userHelper.cartCount(userId)
+  }
+
+
+  userHelper.latestProduct().then((product) => {
+    res.render('user/index', { user, product, cartCount });
   })
-  
+
 });
 
-router.get('/signup',nocache(),(req,res)=>{
-  Err=req.session.signupErr
-  signData= req.session.signupData
-  user=req.session.user
-  if(user){
+router.get('/signup', nocache(), (req, res) => {
+  Err = req.session.signupErr
+  signData = req.session.signupData
+  user = req.session.user
+  if (user) {
     res.redirect('/')
-  }else{
-    res.render('user/signup',{Err,signData})
-    req.session.signupErr=null
-    req.session.signupData=null
+  } else {
+    res.render('user/signup', { Err, signData })
+    req.session.signupErr = null
+    req.session.signupData = null
   }
- 
- 
+
+
 })
 
-router.post("/signup",(req,res)=>{
-  userHelper.userSignUp(req.body).then((response)=>{
-    if(response.status){
-      req.session.user=req.body
+router.post("/signup", (req, res) => {
+  userHelper.userSignUp(req.body).then((response) => {
+    if (response.status) {
+      req.session.user = req.body
       res.redirect('/')
-    }else{
+    } else {
       console.log(response);
-      req.session.signupErr=response
-      req.session.signupData=req.body
+      req.session.signupErr = response
+      req.session.signupData = req.body
       res.redirect('/signup')
     }
   })
 })
 
-router.get('/login',nocache(),(req,res)=>{
-  data=req.session.loginData
-  Err= req.session.loginErr
-  user=req.session.user
-  if(user){
+router.get('/login', nocache(), (req, res) => {
+  data = req.session.loginData
+  Err = req.session.loginErr
+  user = req.session.user
+  if (user) {
     res.redirect('/')
-  }else{
-    res.render('user/login',{Err,data})
-  req.session.loginErr=null
-  req.session.loginData=null
+  } else {
+    res.render('user/login', { Err, data })
+    req.session.loginErr = null
+    req.session.loginData = null
   }
-  
+
 })
-router.post('/login',(req,res)=>{
+router.post('/login', (req, res) => {
   console.log(req.body);
-  userHelper.userLogin(req.body).then((response)=>{
-    if(response.status){
-      req.session.user=response.user
+  userHelper.userLogin(req.body).then((response) => {
+    if (response.status) {
+      req.session.user = response.user
       res.redirect('/')
-    }else{
-      req.session.loginErr=response.msg
-      req.session.loginData=req.body
+    } else {
+      req.session.loginErr = response.msg
+      req.session.loginData = req.body
       res.redirect('/login')
       console.log(response.msg);
     }
   })
 })
-router.get('/logout',(req,res)=>{
-  req.session.user=null
+router.get('/logout', (req, res) => {
+  req.session.user = null
   res.redirect('/login')
 })
 
-router.get('/otp-login',nocache(),(req,res)=>{
-  user=req.session.user
-  if(user){
+router.get('/otp-login', nocache(), async (req, res) => {
+  user = req.session.user
+  if (user) {
     res.redirect('/')
-  }else{
-    otp=req.session.otp
-  data=req.session.otpData
-  err=req.session.otpErr
-  invalid=req.session.InvalidOtp
-  res.render('user/otp-login',{otp,data,err,invalid})
-  req.session.otpErr=null
+  } else {
+    otp = req.session.otp
+    data = req.session.otpData
+    err = req.session.otpErr
+    invalid = req.session.InvalidOtp
+    res.render('user/otp-login', { otp, data, err, invalid })
+    req.session.otpErr = null
   }
-  
+
 })
 
-router.post('/sent-otp',(req,res)=>{
-  userHelper.otpVerify(req.body).then((response)=>{
-    if(response.status){
-      req.session.otp=response.otp
-      req.session.otpData=req.body
-      req.session.otpUser=response.user
+router.post('/sent-otp', (req, res) => {
+  userHelper.otpVerify(req.body).then((response) => {
+    if (response.status) {
+      req.session.otp = response.otp
+      req.session.otpData = req.body
+      req.session.otpUser = response.user
       res.redirect('/otp-login')
-    }else{
-      req.session.otpErr=response.err
-      req.session.otpData=req.body
+    } else {
+      req.session.otpErr = response.err
+      req.session.otpData = req.body
       res.redirect('/otp-login')
     }
   })
 })
 
-router.post('/otp-login',(req,res)=>{
-  otp=req.session.otp
-  userOtp=req.body.otp
-  user=req.session.otpUser
-  if(otp==userOtp){
-    req.session.user=user
-    req.session.otp=null
+router.post('/otp-login', (req, res) => {
+  otp = req.session.otp
+  userOtp = req.body.otp
+  user = req.session.otpUser
+  if (otp == userOtp) {
+    req.session.user = user
+    req.session.otp = null
     res.redirect('/')
-  }else{
-    req.session.InvalidOtp="Invalid Otp"
+  } else {
+    req.session.InvalidOtp = "Invalid Otp"
     res.redirect('/otp-login')
   }
 })
 
-router.get('/shop',(req,res)=>{
-  user=req.session.user
-  userHelper.getProducts().then((product)=>{
-    userHelper.getCategory().then((response)=>{
-      category=response.category
-      brands=response.brands
-      res.render('user/shop',{product,user,category,brands})
+router.get('/shop', async (req, res) => {
+  user = req.session.user
+  let cartCount = 0
+  if (user) {
+    let userId = user._id
+    cartCount = await userHelper.cartCount(userId)
+  }
+
+
+  userHelper.getProducts().then((product) => {
+    userHelper.getCategory().then((response) => {
+      category = response.category
+      brands = response.brands
+      res.render('user/shop', { product, user, category, brands, cartCount })
     })
   })
 })
 
-router.get('/product/:id',(req,res)=>{
-  user=req.session.user
-  userHelper.getProduct(req.params.id).then((product)=>{
+router.get('/product/:id', async (req, res) => {
+  user = req.session.user
+  let cartCount = await userHelper.cartCount(user?._id)
+  userHelper.getProduct(req.params.id).then((product) => {
 
 
 
-    res.render('user/single-product',{product,user})
+    res.render('user/single-product', { product, user, cartCount })
   })
-  
+
 })
 
-router.get('/cart',verifyLogin,(req,res)=>{
+router.get('/cart', verifyLogin, async (req, res) => {
   
-  let user=req.session.user._id
-  userHelper.getCartProducts(user).then((products)=>{
-    console.log(products);
-    res.render('user/cart',{user:req.session.user ,products})
+  let user = req.session.user._id
+  let cartCount = await userHelper.cartCount(user)
+  let total=0
+  if(cartCount>0){
+     total=await userHelper.getTotalAmount(user)
+     let savings=total.total-total.disTotal
+     let disc=Math.floor((savings*100)/total.total)
+     let delivery=(total.disTotal<1500)?100:null;
+     total.savings=savings
+     total.disc=disc
+     total.delivery=delivery
+  }
+  
+  userHelper.getCartProducts(user).then((products) => {
+    res.render('user/cart', { user: req.session.user, products, cartCount,total })
   })
-  
+
 })
 
-router.get('/add-to-cart/:id',verifyLogin,(req,res)=>{
-  let proId=req.params.id
-  let userId=req.session.user._id
-  userHelper.addToCart(proId,userId).then(()=>{
+router.get('/add-to-cart/:id', verifyLogin, (req, res) => {
+  let proId = req.params.id
+  let userId = req.session.user._id
+  userHelper.addToCart(proId, userId).then(() => {
     res.redirect('/cart')
   })
 })
 
+router.post('/change-quantity',(req,res)=>{
+  userHelper.changeQuantity(req.body).then((response)=>{
+    console.log(response);
+    res.json(response)
+  })
+})
 module.exports = router;  

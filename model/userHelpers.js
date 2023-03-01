@@ -197,7 +197,7 @@ module.exports={
                 let proExist=userCart.products.findIndex(product=>product.item==proId)
                 console.log(proExist);
                 if(proExist!=-1){
-                    collections.cartCollection.updateOne({'products.item':ObjectId(proId)},
+                    collections.cartCollection.updateOne({user:ObjectId(userId),'products.item':ObjectId(proId)},
                     {
                         $inc:{'products.$.quantity':1}
                     }).then(()=>{
@@ -252,5 +252,82 @@ module.exports={
            
             resolve(cartItems)
         })
+    },
+    cartCount:(userId)=>{
+        return new Promise(async(resolve, reject) => {
+            let cart=await collections.cartCollection.findOne({user:ObjectId(userId)})
+            if(cart){
+                var  count=cart.products.length
+                resolve(count);
+            }else{
+                var count=0
+                resolve(count)
+            }
+        })
+    },
+    getTotalAmount:(userId)=>{
+        return new Promise(async(resolve, reject) => {
+            let total=await collections.cartCollection.aggregate([
+                {
+                    $match:{user:ObjectId(userId)}
+                },
+                {
+                    $unwind:'$products'
+                },
+                {
+                    $project:{
+                        item:'$products.item',
+                        quantity:'$products.quantity'
+                    }
+                },{
+                    $lookup:{
+                        from:'products',
+                        localField:'item',
+                        foreignField:'_id',
+                        as:'product'
+                    }
+                },
+                {
+                    $project:{
+                        item:1,quantity:1,product:{$arrayElemAt:['$product',0]}
+                    }
+                },
+                {
+                    $group:{
+                        _id:null,
+                        total:{$sum:{$multiply:['$quantity',{$convert:{input:'$product.price',to:'int'}}]}},
+                        disTotal:{$sum:{$multiply:['$quantity',{$convert:{input:'$product.offerPrice',to:'int'}}]}}
+                    }
+                }
+            ]).toArray()
+            resolve(total[0])
+        })
+        
+    },
+    changeQuantity:(details)=>{
+       
+            details.count = parseInt(details.count)
+            details.quantity = parseInt(details.quantity)
+            console.log(details);
+            return new Promise((resolve, reject) => {
+                if(details.count==-1&&details.quantity==1){
+                    collections.cartCollection.updateOne({_id:ObjectId(details.cartId)},{
+                            $pull:{products:{item:ObjectId(details.proId)}}
+                    }).then((response)=>{
+                        response.delete=true
+                       resolve(response)
+                    })
+
+
+                }else{
+                    collections.cartCollection.updateOne({_id:ObjectId(details.cartId),'products.item':ObjectId(details.proId)},
+                    {
+                        $inc:{'products.$.quantity':details.count}
+                    }).then(()=>{
+                        resolve(true)
+                    })
+                }
+            })
+        
     }
 }

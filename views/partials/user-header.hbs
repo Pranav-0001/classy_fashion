@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-white nav-border">
+<nav class="navbar navbar-expand-lg navbar-dark bg-white nav-border" style="position: fixed;width: 100%; z-index: 1;">
     <div class="container-fluid ms-5"><a href="/">
         <img src="/images/logoDark.png" alt="" width="100px"></a>
         <button class="navbar-toggler " type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
@@ -64,6 +64,7 @@
                 <div class="nav-search-box ps-3 pt-3 pe-4" style="border-right-style: none;">
 
                     <a href="/cart"><i class="fa-solid fa-cart-shopping fs-4 text-dark"></i></a>
+                     <span class="badge rounded-pill bg-warning text-dark" style="position: relative; bottom: 50%;">{{cartCount}}</span>
                 </div>
                 {{/if}}
             </form>
@@ -89,4 +90,5 @@
     </div>
 </div>
 </nav>
+<br><br>
 
