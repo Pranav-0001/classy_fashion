@@ -3,51 +3,19 @@ const model=require('./schema')
 const collections=require('./collections');
 const nodemailer=require('nodemailer');
 const mongoose = require('mongoose');
+const { response } = require('express');
 const {ObjectId}=mongoose.Types
 
 module.exports={
     userSignUp:(userData)=>{
         console.log(userData);
         let response={}
-        let emailRegx=/^(\w){3,16}@([A-Za-z]){5,8}.([A-Za-z]){2,3}$/gm
-        let passwordRegx=/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,16}$/gm
-        let usernameRegx=/^([A-Za-z_]){4,12}$/gm
-        let phoneRegx=/^([0-9]){10}$/gm
+        
 
         return new Promise(async(resolve, reject) => {
         var user=await collections.userCollection.findOne({email:userData.email})
         
-            if(userData.password!=userData.repassword){
-                response.Err="Passwords Doest match"
-                resolve(response.Err)
-            }else if(userData.username==''){
-                response.Err="username field is Empty"
-                resolve(response.Err);
-            }else if(usernameRegx.test(userData.username)==false){
-                response.Err="Username can only conatain Letters and _.Should contain atleast 4 letters and max 12"
-                resolve(response.Err);
-            }else if(userData.phone==''){
-                response.Err="Mobile number field is Empty"
-                resolve(response.Err);
-            }else if(phoneRegx.test(userData.phone)==false){
-                response.Err="Invalid Mobile, Should contain 10 numbers"
-                resolve(response.Err);
-            }else if(userData.email==''){
-                response.Err="email field is Empty"
-                resolve(response.Err);
-            }else if(userData.password==''){
-                response.Err="password field is Empty"
-                resolve(response.Err);
-            }else if(userData.repassword==''){
-                response.Err="Need to confirm your Password"
-                resolve(response.Err);
-            }else if(emailRegx.test(userData.email)==false){
-                response.Err="Enter a valid email address"
-                resolve(response.Err);
-            }else if(passwordRegx.test(userData.password)==false){
-                response.Err="Password Should contain atleast one uppercase ,lowercase and  number"
-                resolve(response.Err);
-            }else if(user){
+            if(user){
                 response.Err="User Email already exist"
                 resolve(response.Err);
             }else{
@@ -324,10 +292,22 @@ module.exports={
                     {
                         $inc:{'products.$.quantity':details.count}
                     }).then(()=>{
-                        resolve(true)
+                        resolve({status:true})
                     })
                 }
             })
         
-    }
+    },
+    removeCartProduct:(details)=>{
+        console.log(details);
+        return new Promise((resolve, reject) => {
+            collections.cartCollection.updateOne({_id:ObjectId(details.cart)},
+            {
+                $pull:{products:{item:ObjectId(details.product)}}
+            }).then((response)=>{
+                resolve({removeProduct:true})
+            })
+        })
+    },
+   
 }

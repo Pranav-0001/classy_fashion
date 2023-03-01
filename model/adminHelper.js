@@ -51,44 +51,7 @@ module.exports={
         let response={}
 
         return new Promise((resolve, reject) => {
-            if (productData.product == '') {
-                response.err = "Title field is empty"
-                resolve(response.err);
-            } else if (productData.brand == '') {
-                response.err = "Brand filed is empty"
-                resolve(response.err);
-            } else if (productData.price == '') {
-                response.err = "Price field is empty"
-                resolve(response.err);
-            } else if (productData.stock == '') {
-                response.err = "Stock field is empty"
-                resolve(response.err);
-            } else if (productData.category == '') {
-                response.err = "Please choose any category"
-                resolve(response.err);
-            } else if (productData.description == '') {
-                response.err = "Description field is empty"
-                resolve(response.err);
-            } else if (productRegx.test(productData.product) == false) {
-                response.err = "Invalid Product name,Product name should contain atleast 4 letters"
-                resolve(response.err);
-            } else if (brandRegx.test(productData.brand) == false) {
-                response.err = "Invalid Brand name,Brand name should contain atleast 4 letters"
-                resolve(response.err);
-            }
-            else if (priceRegx.test(productData.price) == false) {
-                response.err = "Price field only allows Numbers"
-                resolve(response.err);  
-            } else if (discountRegx.test(productData.discount) == false) {
-                response.err = "discount field only allows Numbers and range should between 0-99"
-                resolve(response.err);
-            } else if (stockRegx.test(productData.stock) == false) {
-                response.err = "Stock field only allows Numbers"
-                resolve(response.err);
-            } else if (productData.description.length<10) {
-                response.err = "Description is too small"
-                resolve(response.err);
-            } else if (Images.length > 5) {
+        if (Images.length > 5) {
                 response.err = "Max 5 images are allowed"
                 resolve(response.err);
             }else if(!productData.size){

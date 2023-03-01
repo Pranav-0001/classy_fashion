@@ -251,3 +251,16 @@ hr{
 
   box-shadow: rgb(204, 219, 232) 3px 3px 6px 0px inset, rgba(255, 255, 255, 0.5) -3px -3px 6px 1px inset;
 }
+.plc-inp{
+  line-height: 30px;
+  width: 70%;
+  border-width: thin;
+  margin-bottom: 5px;
+  border-color: rgb(172, 174, 172);
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

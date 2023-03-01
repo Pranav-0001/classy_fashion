@@ -4,7 +4,7 @@
 <div class="container mt-2">
     <div class="box mb-3">
         <div class="row p-5 ">
-            <form action="/signup" method="post">
+            <form name="signup" onsubmit="return userSignUp()" action="/signup" method="post">
                 <div class="d-md-flex mb-3" style="position: relative; justify-content: center;left: 3px;">
                     <input class="ms-3 ms-md-0" style="line-height: 40px;width: 90%;" type="text"
                         placeholder="Enter Your Username" name="username" value="{{signData.username}}">
@@ -21,7 +21,7 @@
                 </div>
                 <div class="d-flex mb-3" style="position: relative; justify-content: center;">
                     <select style="width: 90%;line-height: 45px;height: 45px;" class="ms-1" name="gender">
-
+                        <option value="">Gender</option>
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
                         <option value="Others">Others</option>
@@ -39,7 +39,7 @@
                         placeholder="Confirm Your Password" value="{{signData.repassword}}">
                 </div>
                 <div class="text-center mt-4">
-                    <p class="text-danger">{{Err}}</p>
+                    <p class="text-danger" id="signupErr">{{Err}}</p>
                     <button type="submit" class="signup-btn ">SignUp</button>
                     <p class="pt-3">Already have an account ? <span><a href="/login">Login</a></span></p>
                 </div>

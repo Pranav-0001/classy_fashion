@@ -167,12 +167,13 @@ router.get('/cart', verifyLogin, async (req, res) => {
   
   let user = req.session.user._id
   let cartCount = await userHelper.cartCount(user)
-  let total=0
+  let total;
   if(cartCount>0){
      total=await userHelper.getTotalAmount(user)
      let savings=total.total-total.disTotal
      let disc=Math.floor((savings*100)/total.total)
      let delivery=(total.disTotal<1500)?100:null;
+     total.disTotal=total.disTotal+delivery
      total.savings=savings
      total.disc=disc
      total.delivery=delivery
@@ -193,9 +194,28 @@ router.get('/add-to-cart/:id', verifyLogin, (req, res) => {
 })
 
 router.post('/change-quantity',(req,res)=>{
-  userHelper.changeQuantity(req.body).then((response)=>{
-    console.log(response);
+  userHelper.changeQuantity(req.body).then(async(response)=>{
+    
+    
     res.json(response)
   })
+})
+
+router.post('/remove-cart-product',(req,res)=>{
+  userHelper.removeCartProduct(req.body).then((response)=>{
+    res.json(response)
+  })
+})
+router.get('/place-order',verifyLogin,async(req,res)=>{
+  let user=req.session.user
+  let cartProducts=await userHelper.getCartProducts(req.session.user._id)
+  let totalPrice=await userHelper.getTotalAmount(req.session.user._id)
+  totalPrice.saving=totalPrice.total-totalPrice.disTotal
+  console.log(totalPrice);
+  res.render('user/placeOrder',{totalPrice})
+})
+
+router.post('/place-order',(req,res)=>{
+  console.log(req.body);
 })
 module.exports = router;  
