@@ -152,29 +152,35 @@ module.exports={
             resolve(pro)
         })
     },
-    addToCart:(proId,userId)=>{
+    addToCart:(proId,userId,size)=>{
+        console.log("size : ",size);
         let proObj={
             item:ObjectId(proId),
-            quantity:1
+            quantity:1,
+            size:size.Size
         }
         return new Promise(async(resolve, reject) => {
             
 
             let userCart=await collections.cartCollection.findOne({user:ObjectId(userId)})
+           
+           
             if(userCart){
                 let proExist=userCart.products.findIndex(product=>product.item==proId)
                 console.log(proExist);
-                if(proExist!=-1){
+                
+                if(proExist!=-1 ){
                     collections.cartCollection.updateOne({user:ObjectId(userId),'products.item':ObjectId(proId)},
                     {
                         $inc:{'products.$.quantity':1}
                     }).then(()=>{
                         resolve()
                     })
+                  
                 }else{
                     collections.cartCollection.updateOne({user:ObjectId(userId)},{
                         $push:{products:proObj}
-                    }).then(()=>{
+                    }).then(()=>{ 
                         resolve()
                     })
                 }
@@ -201,7 +207,8 @@ module.exports={
                 {
                     $project:{
                         item:'$products.item',
-                        quantity:'$products.quantity'
+                        quantity:'$products.quantity',
+                        size:'$products.size'
                     }
                 },{
                     $lookup:{
@@ -213,12 +220,14 @@ module.exports={
                 },
                 {
                     $project:{
-                        item:1,quantity:1,product:{$arrayElemAt:['$product',0]}
+                        item:1,quantity:1,size:1,product:{$arrayElemAt:['$product',0]}
                     }
                 }
             ]).toArray()
-           
+            
+            console.log(cartItems);
             resolve(cartItems)
+
         })
     },
     cartCount:(userId)=>{
@@ -309,5 +318,47 @@ module.exports={
             })
         })
     },
-   
+    placeOrder:(orderData,userId,cartProducts,totalPrice)=>{
+        return new Promise((resolve, reject) => {
+            let orderDate=new Date()
+            
+
+            
+            
+            let OrderObj={
+                 Address:{
+                    name:orderData.fname+' '+orderData.lname,
+                    address:orderData.address,
+                    town:orderData.town,
+                    pincode:orderData.pincode,
+                    state:orderData.pincode,
+                    phone:orderData.phone,
+                    email:orderData.email,
+                    date:orderDate
+                },
+                userId:ObjectId(userId),
+                products:cartProducts,
+                subTotal:totalPrice.total,
+                discTotal:totalPrice.disTotal
+            }
+            console.log(OrderObj);
+            if(orderData?.save=='true'){
+                collections.userCollection.updateOne({_id:ObjectId(userId)},{$push:{address:Address}})
+            }
+            collections.orderCollection.insertOne(OrderObj).then((response)=>{
+                collections.cartCollection.deleteOne({user:ObjectId(userId)}).then(()=>{
+                    resolve()
+                })
+            })
+
+        })
+    },
+    orders:(userId)=>{
+        return new Promise(async(resolve, reject) => {
+            let orderData=await collections.orderCollection.find({userId:ObjectId(userId)}).toArray()
+            resolve(orderData);
+
+        })
+    }
+    
 }

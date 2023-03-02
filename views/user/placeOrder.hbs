@@ -28,6 +28,10 @@
 
                 <input type="checkbox" class="mt-3" name="save" id="" style=" width:20px ;height:20px" value=true><span
                     class="ps-2 mb-2" for="">Save this address</span>
+                    <br>
+                {{#if user.address}}
+                <a href="">Select from saved address</a>
+                {{/if}}
             </div>
             <div class="col-md-4 mt-3">
 

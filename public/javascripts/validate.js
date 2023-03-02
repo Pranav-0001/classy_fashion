@@ -69,7 +69,7 @@ function placeOrder() {
 
 
 }
-
+ 
 function userSignUp(){
     let username=document.signup.username.value
     let phone=document.signup.phone.value

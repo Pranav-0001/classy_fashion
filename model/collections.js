@@ -6,5 +6,7 @@ module.exports={
     adminCollection:mongoose.model("admin",model.adminSchema).collection,
     productCollection:mongoose.model("products",model.productSchema).collection,
     categoryCollection:mongoose.model("categories",model.categorySchema).collection,
-    cartCollection:mongoose.model('cart',model.cartSchema).collection
+    cartCollection:mongoose.model('cart',model.cartSchema).collection,
+    orderCollection:mongoose.model('orders',model.orderSchema).collection
+    
 } 

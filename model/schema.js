@@ -24,6 +24,9 @@ module.exports={
         status:{
             type:Boolean,
             required:true
+        },
+        address:{
+            type:Array
         }
     }),
     adminSchema:new mongoose.Schema({
@@ -97,5 +100,29 @@ module.exports={
         products:{
             typeof:Array
         }
+    }),
+    orderSchema:new mongoose.Schema({
+        Address:{
+            type:Object,
+            required:true
+        },
+        userId:{
+            type:String,
+            required:true
+        },
+        products:{
+            type:Array,
+            required:true
+        },
+        subTotal:{
+            type:Number,
+            required:true
+        },
+        disTotal:{
+            type:Number,
+            required:true
+        }
+
     })
+
 }
