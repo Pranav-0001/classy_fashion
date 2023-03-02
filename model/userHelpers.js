@@ -78,16 +78,16 @@ module.exports={
             let user=await collections.userCollection.findOne({email:data.email})
             if(user){
                 if(user.status){
-                    otpEmail=user.email
-                response.otp=OTP()
-               let otp=response.otp
-                let mailTransporter=nodemailer.createTransport({
-                    service:"gmail",
-                    auth:{
-                        user:"classyfashionclub123@gmail.com",
-                        pass:"zylmubqixjssrdhe"
-                    }
-                })
+                    otpEmail = user.email
+                    response.otp = OTP()
+                    let otp = response.otp
+                    let mailTransporter = nodemailer.createTransport({
+                        service: "gmail",
+                        auth: {
+                            user: "classyfashionclub123@gmail.com",
+                            pass: "zylmubqixjssrdhe"
+                        }
+                    })
                 
                 let details={
                     from:"classyfashionclub123@gmail.com",

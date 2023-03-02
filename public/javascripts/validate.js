@@ -137,8 +137,9 @@ function addProductValidate(){
     productData.category=document.addProduct.category.value
     productData.description = document.addProduct.description.value
     productData.discount=document.addProduct.discount.value
+    let s=document.addProduct.M.value
 
-    console.log(productData);
+    console.log(s);
 
     if (productData.product == '') {
         document.getElementById('addErrId').innerHTML = "Title field is empty"

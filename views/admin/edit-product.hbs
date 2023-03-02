@@ -13,22 +13,18 @@
             
         </select>
         <div class="d-flex mb-3">
-            {{#each product.size}}
-            <label for="XS">{{[]}}</label>
-            <input type="checkbox" name="size" id="" value="XS" style="width: 40px;" checked>
-            {{/each}}
-            <label for="XS">XS</label>
-            <input type="checkbox" name="size" id="" value="XS" style="width: 40px;">
+           
+            
             <label for="S">S</label>
-            <input type="checkbox" name="size" id="" value="S" style="width: 40px;">
+            <input type="checkbox" name="S" id="" {{#if product.size.[0]}} checked {{/if}} style="width: 40px;">
             <label for="M">M</label>
-            <input type="checkbox" name="size" id="" value="M" style="width: 40px;">
+            <input type="checkbox" name="M" id="" {{#if product.size.[1]}} checked {{/if}}  style="width: 40px;">
             <label for="L">L</label>
-            <input type="checkbox" name="size" id="" value="L" style="width: 40px;">
+            <input type="checkbox" name="L" id="" {{#if product.size.[2]}} checked {{/if}}  style="width: 40px;">
             <label for="XL">XL</label>
-            <input type="checkbox" name="size" id="" value="XL" style="width: 40px;">
+            <input type="checkbox" name="XL" id="" {{#if product.size.[3]}} checked {{/if}}  style="width: 40px;">
             <label for="XXL">XXL</label>
-            <input type="checkbox" name="size" id="" value="XXL" style="width: 40px;">
+            <input type="checkbox" name="XXL" id="" {{#if product.size.[4]}} checked {{/if}}  style="width: 40px;">
              
         </div>
          

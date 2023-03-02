@@ -41,29 +41,29 @@ module.exports={
         console.log(Images);
         console.log(productData);
 
-
-        priceRegx = /^([0-9]){1,6}$/gm
-        productRegx = /^([A-Za-z 0-9 -,]){4,}$/gm
-        brandRegx = /^([A-Za-z ]){3,12}$/gm
-        discountRegx = /^([0-9]){1,2}$/gm
-        stockRegx = /^([0-9]){1,5}$/gm
-        desRegx = /^([A-Za-z0-9 ,_.-|'"]){5,500}$/gm
         let response={}
 
         return new Promise((resolve, reject) => {
         if (Images.length > 5) {
                 response.err = "Max 5 images are allowed"
                 resolve(response.err);
-            }else if(!productData.size){
-                response.err="Choose any Size"
-                resolve(response.err);
             } else if (Images.length < 2) {
                 response.err = "5 Images Required"
                 resolve(response.err);
-            } else {
+            } else if(!productData.S && !productData.M && !productData.L && !productData.XL && !productData.XXL){
+                response.err = "Should select one size"
+                resolve(response.err);
+            }else {
                 let count = Images.length
                 console.log(count);
                 let imgId = []
+                let size=[]
+                if(productData.S=='on')size.push('S'); else size.push('')
+                if(productData.M=='on')size.push('M'); else size.push('')
+                if(productData.L=='on')size.push('L'); else size.push('')
+                if(productData.XL=='on')size.push('XL'); else size.push('')
+                if(productData.XXL=='on')size.push('S'); else size.push('')
+                
                 if (count) {
                     for (i = 0; i < count; i++) {
                         imgId[i] = uuid.v4()
@@ -82,6 +82,7 @@ module.exports={
                 let offerPrice = productData.price - offer
                 productData.offerPrice = parseInt(offerPrice)
                 productData.savings = parseInt(offer)
+                productData.size=size
 
 
 
@@ -186,7 +187,7 @@ module.exports={
             }else if(brandRegx.test(productData.brand)==false){
                 response.err="Invalid Brand name,Brand name should contain atleast 4 letters"
                 resolve(response.err);
-            }else if(!productData.size){
+            }else if(!productData.S && !productData.M && !productData.L && !productData.XL && !productData.XXL){
                 response.err="Choose any Size"
                 resolve(response.err);
             }
@@ -204,11 +205,17 @@ module.exports={
                 resolve(response.err);
             }
             else{
+
                 product=await collections.productCollection.findOne({_id:ObjectId(proId)})
                 productData.price = parseInt(productData.price)
                 productData.discount = parseInt(productData.discount)
                 productData.stock = parseInt(productData.stock)
-
+                let size=[]
+                if(productData.S=='on')size.push('S'); else size.push('')
+                if(productData.M=='on')size.push('M'); else size.push('')
+                if(productData.L=='on')size.push('L'); else size.push('')
+                if(productData.XL=='on')size.push('XL'); else size.push('')
+                if(productData.XXL=='on')size.push('S'); else size.push('')
                 let offer = (productData.price * productData.discount) / 100
                 let offerPrice = productData.price - offer
                 productData.offerPrice = parseInt(offerPrice)
@@ -223,7 +230,7 @@ module.exports={
                     description:productData.description,
                     offerPrice:productData.offerPrice,
                     savings:productData.savings,
-                    size:productData.size
+                    size:size
                 }})
                 response.status=true
                 response.pro=product
