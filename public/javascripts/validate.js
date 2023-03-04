@@ -207,3 +207,26 @@ function addProductValidate(){
     }
     return true
 }
+
+function changePass(){
+    let pass =document.changePassForm.newpass.value
+    let cnfrm=document.changePassForm.confirm.value
+    let Err=document.getElementById('verErr')
+    let passwordRegx = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,16}$/gm
+
+    if(pass==''){
+        Err.innerHTML="Password field required"
+        return false
+    }else if(cnfrm==''){
+        Err.innerHTML="Confirm your password "
+        return false
+    }else if(pass!=cnfrm){
+        Err.innerHTML="Passwords not matching "
+        return false
+    }else if(passwordRegx.test(pass)==false){
+        Err.innerHTML="Password Should contain atleast one uppercase ,lowercase and  number"
+        return false
+    }
+    return true
+
+}

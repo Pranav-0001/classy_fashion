@@ -20,7 +20,7 @@ module.exports={
                 resolve(response.Err);
             }else{
                 userData.password=await bcrypt.hash(userData.password,10)
-                console.log(userData.password);
+                
                 userData={
                     username:userData.username,
                     phone:userData.phone,
@@ -405,6 +405,49 @@ module.exports={
             }}).then(()=>{
                 resolve()
             })
+        })
+    },
+    verifyPassword:(userId,Password)=>{
+        return new Promise(async(resolve, reject) => {
+            let user=await collections.userCollection.findOne({_id:ObjectId(userId)})
+            console.log(Password);
+            let response={}
+            bcrypt.compare(Password.password,user.password).then((status)=>{
+                if(status){
+                    response.status=true
+                    resolve(response)
+                }else{
+                    response.error="Wrong Password"
+                    resolve(response)
+                }
+               
+            })
+        })
+    },
+    changePassword:(password,user)=>{
+        let currPass=user.password
+        let id=user._id
+        return new Promise((resolve, reject) => {
+            bcrypt.compare(password,currPass).then(async(status)=>{
+                if(status){
+                    let Err="Your new password cannot be the same as current password"
+                    resolve(Err)
+                }else{
+                    password=await bcrypt.hash(password,10)
+                    collections.userCollection.updateOne({_id:ObjectId(id)},{$set:{
+                        password:password
+                    }}).then(()=>{
+                        
+                        resolve()
+                    })
+                }
+            })
+        })
+    },
+    getUserAddress:(userId)=>{
+        return new Promise(async(resolve, reject) => {
+            let userData=await collections.userCollection.findOne({_id:ObjectId(userId)})
+            resolve(userData.address)
         })
     }
     

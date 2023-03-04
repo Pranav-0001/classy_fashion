@@ -363,3 +363,25 @@ a:hover{
   background-position:center ;
   background-repeat: no-repeat;
 }
+.pass-change-button:hover{
+  color: white;
+  
+}
+.pass-change-button{
+  color: white;
+}
+.pass-ver-btn{
+  border: none;
+  background-color: transparent;
+  color: blue;
+}
+.chng-pass{
+  border: none;
+  background-color: black;
+  color: white  ;
+}
+.bg-img-address{
+  background-image: url('/images/noaddress.gif');
+  background-repeat: no-repeat;
+  background-position: center;
+}

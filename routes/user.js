@@ -266,7 +266,7 @@ router.get('/orderItem/:orderId/:proId/:index',verifyLogin,(req,res)=>{
 router.get('/profile', verifyLogin,async (req, res) => {
 
   let userData=await userHelper.getUserInformation(req.session.user._id)
-  console.log(userData);
+ 
   res.render('user/profile', { user: req.session.user ,userData })
 })
 
@@ -274,5 +274,54 @@ router.post('/update-user-data',(req,res)=>{
   userHelper.updateUserData(req.session.user._id,req.body)
   res.redirect('/profile')
 })
+
+router.get('/Change-password',verifyLogin,(req,res)=>{
+  let upass=req.session.pass
+  let response=req.session.res
+  let Err=req.session.verifyErr
+console.log(upass);
+  res.render('user/change-password',{user:req.session.user,upass,response,Err})
+  req.session.pass=null
+  req.session.res=null
+  req.session.verifyErr=null
+})
+
+router.post('/verify-password',(req,res)=>{
+  userHelper.verifyPassword(req.session.user._id,req.body).then((response)=>{
+    if(response.status){
+      req.session.pass=req.body.password
+      req.session.res=response.status
+      res.redirect('/change-password')
+    }else{
+      req.session.verifyErr=response.error
+      res.redirect('/change-password')
+    }
+  })
+})
+
+router.post('/change-password',(req,res)=>{
+  
+  let pass=req.body.newpass
+  userHelper.changePassword(pass,req.session.user).then((Err)=>{
+    if(Err){
+      req.session.verifyErr=Err
+      res.redirect('/change-password')
+    }else{
+   
+      res.redirect('/')
+
+    }
+  })
+})
+
+
+router.get('/address-manage',verifyLogin,(req,res)=>{
+  userHelper.getUserAddress(req.session.user._id).then((address)=>{
+
+    res.render('user/address',{address,user:req.session.user,address})
+  })
+  
+})
+
 module.exports = router;  
  
