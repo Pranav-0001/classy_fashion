@@ -271,5 +271,19 @@ router.get('/logout',(req,res)=>{
   req.session.admin=null
   res.redirect('/admin')
 })
+
+router.get('/all-orders',verifyLogin,(req,res)=>{
+  adminHelper.getAllOrders().then((orders)=>{
+    res.render('admin/all-orders',{admin:req.session.admin,orders})
+  })
+})
+
+router.get('/orderdetails/:id([0-9a-fA-F]{24})',verifyLogin,async(req,res)=>{
+  let order=await adminHelper.viewOrder(req.params.id)
+  console.log(order);
+  res.render('admin/order-details',{order})
+  
+})
+
 module.exports = router;
   

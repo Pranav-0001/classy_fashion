@@ -190,7 +190,7 @@ router.get('/cart', verifyLogin, async (req, res) => {
 router.post('/add-to-cart/:id', verifyLogin, (req, res) => {
   let proId = req.params.id
   let userId = req.session.user._id
-  console.log(req.body);
+ 
   userHelper.addToCart(proId, userId,req.body).then(() => {
     res.redirect('/cart')
   })
@@ -198,7 +198,10 @@ router.post('/add-to-cart/:id', verifyLogin, (req, res) => {
 
 router.post('/change-quantity',(req,res)=>{
   userHelper.changeQuantity(req.body).then(async(response)=>{
-    
+    let total=await userHelper.getTotalAmount(req.session.user._id)
+    let savings=total.total-total.disTotal
+    response.total=total
+    response.disc=Math.floor((savings*100)/total.total)
     
     res.json(response)
   })
@@ -210,35 +213,66 @@ router.post('/remove-cart-product',(req,res)=>{
   })
 })
 router.get('/place-order',verifyLogin,async(req,res)=>{
-
+  let Err=req.session.placeOrderErr
   let user=req.session.user
   let cartProducts=await userHelper.getCartProducts(req.session.user._id)
   let totalPrice=await userHelper.getTotalAmount(req.session.user._id)
   totalPrice.saving=totalPrice.total-totalPrice.disTotal
   
-  res.render('user/placeOrder',{totalPrice,user})
+  res.render('user/placeOrder',{totalPrice,user,Err})
+  req.session.placeOrderErr=null
 })
 
 router.get('/place-order-success-page',(req,res)=>{
+  
   res.render('user/order-success',{user:req.session.user})
+  
 })
 
 router.post('/place-order',async(req,res)=>{
-  
+   
   userId=req.session.user._id
+  let username=req.session.user.username
   let cartProducts=await userHelper.getCartProducts(req.session.user._id)
   let totalPrice=await userHelper.getTotalAmount(req.session.user._id)
-  userHelper.placeOrder(req.body,userId,cartProducts,totalPrice).then(()=>{
-    res.render('user/order-success',{user:req.session.user})
-  }) 
+  userHelper.placeOrder(req.body,userId,cartProducts,totalPrice,username).then(()=>{
+    
+      res.render('user/order-success',{user:req.session.user})
+     
+     
+  })  
 })
 
 router.get('/orders',verifyLogin,(req,res)=>{
 
   userHelper.orders(req.session.user._id).then((orderData)=>{
-    console.log(orderData[0].products);
+    console.log(orderData);
+    res.render('user/orders',{orderData,user:req.session.user})
   })
-  res.render('user/orders')
+  
 })
 
+router.get('/orderItem/:orderId/:proId/:index',verifyLogin,(req,res)=>{
+  let orderId=req.params.orderId
+  let proId=req.params.proId
+  let index=req.params.index
+  
+  userHelper.singleOrder(orderId,proId,index).then((singleOrder)=>{
+    
+    res.render('user/singleOrder',{singleOrder,user:req.session.user})
+  })
+})
+
+router.get('/profile', verifyLogin,async (req, res) => {
+
+  let userData=await userHelper.getUserInformation(req.session.user._id)
+  console.log(userData);
+  res.render('user/profile', { user: req.session.user ,userData })
+})
+
+router.post('/update-user-data',(req,res)=>{
+  userHelper.updateUserData(req.session.user._id,req.body)
+  res.redirect('/profile')
+})
 module.exports = router;  
+ 

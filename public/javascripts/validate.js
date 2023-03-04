@@ -122,6 +122,35 @@ function userSignUp(){
 
 }
 
+function userEdit(){
+    let username=document.editProfile.username.value
+    let phone=document.editProfile.phone.value
+    let email=document.editProfile.email.value
+    let emailRegx = /^(\w){3,16}@([A-Za-z]){5,8}.([A-Za-z]){2,3}$/gm
+    let usernameRegx = /^([A-Za-z_]){4,12}$/gm
+    let phoneRegx = /^([0-9]){10}$/gm
+    if(username==''){
+        document.getElementById('signupErr').innerHTML="Username field required"
+        return false
+    }else if(usernameRegx.test(username)==false){
+        document.getElementById('signupErr').innerHTML="Username can only conatain Letters and _.Should contain atleast 4 letters and max 12"
+        return false
+    }else if(phone==''){
+        document.getElementById('signupErr').innerHTML="Phone number field required"
+        return false
+    }else if(phoneRegx.test(phone)==false){
+        document.getElementById('signupErr').innerHTML="Invalid Phone number"
+        return false
+    }else if(email==''){
+        document.getElementById('signupErr').innerHTML="Email field required"
+        return false
+    }else if(emailRegx.test(email)==false){
+        document.getElementById('signupErr').innerHTML="Invalid email address"
+        return false
+    }
+    return true
+}
+
 function addProductValidate(){
     let priceRegx = /^([0-9]){1,6}$/gm
     let proRegx = /^([A-Za-z 0-9]){4,80}$/gm

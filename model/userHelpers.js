@@ -286,7 +286,11 @@ module.exports={
             details.count = parseInt(details.count)
             details.quantity = parseInt(details.quantity)
             console.log(details);
-            return new Promise((resolve, reject) => {
+            return new Promise(async(resolve, reject) => {
+                // let product=await collections.productCollection.findOne({_id:ObjectId(details.proId)})
+                // let cartProduct=await collections.categoryCollection.findOne({_id:ObjectId(details.cartId),'products.item':ObjectId(details.proId)})
+                
+                
                 if(details.count==-1&&details.quantity==1){
                     collections.cartCollection.updateOne({_id:ObjectId(details.cartId)},{
                             $pull:{products:{item:ObjectId(details.proId)}}
@@ -318,36 +322,49 @@ module.exports={
             })
         })
     },
-    placeOrder:(orderData,userId,cartProducts,totalPrice)=>{
-        return new Promise((resolve, reject) => {
+    placeOrder:(orderData,userId,cartProducts,totalPrice,username)=>{
+        return new Promise(async(resolve, reject) => {
             let orderDate=new Date()
             
 
+            let proCount=cartProducts.length
+            for(i=0;i<proCount;i++){
+                let qty=-(cartProducts[i].quantity)
+                let produId=cartProducts[i].item
+                console.log(produId,qty);
+                let product=await collections.productCollection.findOne({_id:produId})
+
+              
+                collections.productCollection.updateOne({_id:produId},{$inc:{stock:qty}})
+            }
             
-            
+
             let OrderObj={
                  Address:{
                     name:orderData.fname+' '+orderData.lname,
                     address:orderData.address,
                     town:orderData.town,
                     pincode:orderData.pincode,
-                    state:orderData.pincode,
+                    state:orderData.state,
                     phone:orderData.phone,
                     email:orderData.email,
-                    date:orderDate
+                    date:orderDate,
+                    payment:orderData.payment
                 },
                 userId:ObjectId(userId),
+                username:username,
                 products:cartProducts,
                 subTotal:totalPrice.total,
-                discTotal:totalPrice.disTotal
+                discTotal:totalPrice.disTotal,
+                
             }
-            console.log(OrderObj);
+            
             if(orderData?.save=='true'){
                 collections.userCollection.updateOne({_id:ObjectId(userId)},{$push:{address:Address}})
             }
             collections.orderCollection.insertOne(OrderObj).then((response)=>{
                 collections.cartCollection.deleteOne({user:ObjectId(userId)}).then(()=>{
-                    resolve()
+                    resolve() 
                 })
             })
 
@@ -358,6 +375,36 @@ module.exports={
             let orderData=await collections.orderCollection.find({userId:ObjectId(userId)}).toArray()
             resolve(orderData);
 
+        })
+    },
+    singleOrder:(orderId,proId,index)=>{
+        return new Promise(async(resolve, reject) => {
+            let order=await collections.orderCollection.findOne({_id:ObjectId(orderId)})
+           
+            let singleProductData={
+                productData:order.products[index],
+                address:order.Address
+            }
+            resolve(singleProductData);
+        })
+    },
+    getUserInformation:(userId)=>{
+        return new Promise(async(resolve, reject) => {
+            let userData=await collections.userCollection.findOne({_id:ObjectId(userId)})
+            resolve(userData)
+        })
+
+    },
+    updateUserData:(userId,userData)=>{
+        return new Promise((resolve, reject) => {
+            
+            collections.userCollection.updateOne({_id:ObjectId(userId)},{$set:{
+                username:userData.username,
+                email:userData.email,
+                phone:userData.phone
+            }}).then(()=>{
+                resolve()
+            })
         })
     }
     

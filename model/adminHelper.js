@@ -4,6 +4,7 @@ const uuid=require('uuid')
 const mongoose=require('mongoose')
 const fs=require('fs');
 const { categoryCollection } = require('./collections');
+const { Console } = require('console');
 
 const {ObjectId}=mongoose.Types
 
@@ -328,6 +329,20 @@ module.exports={
         return new Promise((resolve, reject) => {
             collections.categoryCollection.updateOne({_id:ObjectId(cateId)},{$set:{category:cate.category}})
             resolve()
+        })
+    },
+    getAllOrders:()=>{
+        return new Promise(async(resolve, reject) => {
+            let orders= await collections.orderCollection.find().toArray()
+            resolve(orders);
+        })
+    },
+    viewOrder:(orderId)=>{
+        orderId=ObjectId(orderId)
+        console.log(orderId);
+        return new Promise(async(resolve, reject) => {
+            let order=await collections.orderCollection.findOne({_id:orderId})
+            resolve(order)
         })
     }
 }

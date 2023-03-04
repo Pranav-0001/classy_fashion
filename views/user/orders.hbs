@@ -2,18 +2,30 @@
     <div class="container mt-3 " >
     <div class="row pt-4 pb-4">
         <div class="col-md-12">
-            <div class="row outer-box-orders">
+            {{#each orderData}}
+             {{#each products}}
+            <div class="row outer-box-orders mb-3" onclick="window.location.href='/orderItem/{{../_id}}/{{product._id}}/{{@index}}'">
                 <div class="col-md-2">
-                    <img src="/product-images/06902223-ce2e-48dc-8350-36ff87cd0839.jpg" alt="" width="85%">
+                    <img src="/product-images/{{product.Images.[1]}}.jpg" alt="" width="85%">
                 </div>
                 <div class="col-md-10">
-                    <b class="text-success fs-5">Arriving today</b>
-                    <h3>name</h3>
-                    <h5 class="text-secondary">brand</h5>
-                    <h6>price</h6>
+                    <b class="text-success fs-5">Arriving today </b>
+                    <h3>{{product.product}}</h3>
+                    <h5 class="text-secondary">{{product.brand}}</h5>
+                    <h6 class="text-secondary">Size : {{size}}</h6>
+                    <div class="d-flex">
+                      <h6 class="text-secondary pe-3" style="text-decoration: line-through;">₹{{product.price}}</h6>
+                    <h6>₹{{product.offerPrice}}</h6>  
+                    
+                    </div>
+                    
+                    
                     <a href="" class="btn btn-danger float-end">Cancel Order</a>
                 </div>
             </div>
+            {{/each}}
+            {{/each}}
+       
         </div>
     </div>
 </div>
