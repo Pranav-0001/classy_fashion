@@ -1,15 +1,15 @@
 <div class="container">
-    <a href="" class="btn float-end btn-success mt-3">Add Address</a>
+    <a href="/add-address/{{user._id}}" class="btn float-end btn-success mt-3">Add Address</a>
 </div>
 
 {{#if address}}
 <div class="container mt-5">
     {{#each address}}
-<div class="card border" style="width: 18rem;">
+<div class="card border card-hover-add" style="width: 18rem;">
   <div class="card-body">
   
-    <h6 class="card-subtitle mb-2 text-dark">{{name}}</h6>
-    <h6 class="card-subtitle mb-2 text-muted">{{address}}</h6>
+    <h5 class="card-subtitle mb-2 text-dark d-inline" >{{name}}</h5> <i class="d-inline fa-solid fa-trash text-danger float-end fs-5"></i>
+    <h6 class="card-subtitle mb-2 text-muted mt-2">{{address}}</h6>
     <h6 class="card-subtitle mb-2 text-muted">{{town}}</h6>
    
     <h6 class="card-subtitle mb-2 text-muted">{{state}}</h6>

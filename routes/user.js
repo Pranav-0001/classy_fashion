@@ -323,5 +323,9 @@ router.get('/address-manage',verifyLogin,(req,res)=>{
   
 })
 
+router.get('/add-address/:id',verifyLogin,(req,res)=>{
+  res.render('user/add-address',{user:req.session.user})
+})
+
 module.exports = router;  
  
