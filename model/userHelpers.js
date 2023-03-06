@@ -5,6 +5,7 @@ const nodemailer=require('nodemailer');
 const mongoose = require('mongoose');
 const { response } = require('express');
 const {ObjectId}=mongoose.Types
+const uuid=require('uuid')
 
 module.exports={
     userSignUp:(userData)=>{
@@ -325,8 +326,10 @@ module.exports={
     placeOrder:(orderData,userId,cartProducts,totalPrice,username)=>{
         return new Promise(async(resolve, reject) => {
             let orderDate=new Date()
+            let user=await collections.userCollection.findOne({_id:ObjectId(userId)})
+            let count=uuid.v4()
             
-
+            
             let proCount=cartProducts.length
             for(i=0;i<proCount;i++){
                 let qty=-(cartProducts[i].quantity)
@@ -349,7 +352,8 @@ module.exports={
                     phone:orderData.phone,
                     email:orderData.email,
                     date:orderDate,
-                    payment:orderData.payment
+                    payment:orderData.payment,
+                    index:count
                 },
                 userId:ObjectId(userId),
                 username:username,
@@ -425,9 +429,11 @@ module.exports={
         })
     },
     changePassword:(password,user)=>{
-        let currPass=user.password
+       
         let id=user._id
-        return new Promise((resolve, reject) => {
+        return new Promise(async(resolve, reject) => {
+            let userData=await collections.userCollection.findOne({_id:ObjectId(id)})
+            currPass=userData.password
             bcrypt.compare(password,currPass).then(async(status)=>{
                 if(status){
                     let Err="Your new password cannot be the same as current password"
@@ -448,6 +454,35 @@ module.exports={
         return new Promise(async(resolve, reject) => {
             let userData=await collections.userCollection.findOne({_id:ObjectId(userId)})
             resolve(userData.address)
+        })
+    },
+    addUserAddress:(userId,addressData)=>{
+
+        return new Promise(async(resolve, reject) => {
+            let user=await collections.userCollection.findOne({_id:ObjectId(userId)})
+            let count=uuid.v4()
+            let address={
+                name:addressData.fname+' '+addressData.lname,
+                address:addressData.address,
+                town:addressData.town,
+                pincode:addressData.pincode,
+                state:addressData.state,
+                phone:addressData.phone,
+                email:addressData.email,
+                index:count
+            }
+            collections.userCollection.updateOne({_id:ObjectId(userId)},{$push:{address:address}})
+            resolve()
+        })
+        
+
+    },
+    deleteAddress:(indexId,userId)=>{
+        return new Promise((resolve, reject) => { 
+            indexId=parseInt(indexId)
+            collections.userCollection.updateOne({_id:ObjectId(userId)},{$pull:{address:{index:indexId}}}).then((res)=>{
+                resolve()
+            })
         })
     }
     

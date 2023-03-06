@@ -327,5 +327,18 @@ router.get('/add-address/:id',verifyLogin,(req,res)=>{
   res.render('user/add-address',{user:req.session.user})
 })
 
-module.exports = router;  
+router.post('/add-address/:id',(req,res)=>{
+  console.log(req.body);
+  userHelper.addUserAddress(req.params.id,req.body).then(()=>{
+    res.redirect('/address-manage')
+  })
+})
+
+router.get('/delete-address/:index/:id',(req,res)=>{
+  userHelper.deleteAddress(req.params.index,req.params.id).then(()=>{
+    res.redirect('/address-manage')
+  })
+})
+
+module.exports = router;   
  

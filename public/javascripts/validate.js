@@ -230,3 +230,71 @@ function changePass(){
     return true
 
 }
+
+function addAddressVali(){
+    let fname=document.addAddress.fname.value
+    let lname=document.addAddress.lname.value
+    let state=document.addAddress.state.value
+    let address=document.addAddress.address.value
+    let pincode=document.addAddress.pincode.value
+    let town=document.addAddress.town.value
+    let phone=document.addAddress.phone.value
+    let email=document.addAddress.email.value 
+    let nameRegx=/^([A-Za-z]){3,20}$/gm
+    let lnameRegx=/^([A-Za-z]){1,20}$/gm
+    let pinRegx=/^([0-9]){6}$/gm
+    let phoneregex=/^([0-9]){10}$/gm
+    let EmailRegx=/^(\w){3,16}@([A-Za-z]){5,8}.([A-Za-z]){2,3}$/gm
+
+    if(fname==''){
+        document.getElementById('placeOrderErr').innerHTML="Firstname field reqired"
+        return false
+    }
+    else if(nameRegx.test(fname)==false){
+        document.getElementById('placeOrderErr').innerHTML="Firstname only allows characters and length should atleast 4 characters"
+        return false
+    }else if(lname==''){
+        document.getElementById('placeOrderErr').innerHTML="Lastname field reqired"
+        return false
+    }else if(lnameRegx.test(lname)==false){
+        document.getElementById('placeOrderErr').innerHTML="lastname only allows characters and length should atleast 4 characters"
+        return false
+    }else if(state==''){
+        document.getElementById('placeOrderErr').innerHTML="Select Your state"
+        return false
+    }else if(address==''){
+        document.getElementById('placeOrderErr').innerHTML="Address field required"
+        return false
+    }else if(address.length<5){
+        document.getElementById('placeOrderErr').innerHTML="Address is too small"
+        return false
+    }else if(pincode==''){
+        document.getElementById('placeOrderErr').innerHTML="Pincode field is empty"
+        return false
+    }
+    else if(pinRegx.test(pincode)==false){
+        document.getElementById('placeOrderErr').innerHTML="Invalid Pincode" 
+        return false
+    }else if(town==''){
+        document.getElementById('placeOrderErr').innerHTML="Town field required" 
+        return false
+    }else if(town.length<5){
+        document.getElementById('placeOrderErr').innerHTML="Town name is too small enter a valid town" 
+        return false
+    }else if(phone==''){
+        document.getElementById('placeOrderErr').innerHTML="Phone number field is required" 
+        return false
+    }else if(email==''){
+        document.getElementById('placeOrderErr').innerHTML="Phone number field is required" 
+        return false
+    }else if(phoneregex.test(phone)==false){
+        document.getElementById('placeOrderErr').innerHTML="Invalid Phone Number" 
+        return false
+    }else if(EmailRegx.test(email)==false){
+        document.getElementById('placeOrderErr').innerHTML="Invalid Email address" 
+        console.log(email);
+        return false
+    }
+
+    return true
+}

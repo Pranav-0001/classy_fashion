@@ -1,14 +1,16 @@
-<div class="container">
+<div class="container mt-3">
     <a href="/add-address/{{user._id}}" class="btn float-end btn-success mt-3">Add Address</a>
 </div>
 
 {{#if address}}
-<div class="container mt-5">
-    {{#each address}}
-<div class="card border card-hover-add" style="width: 18rem;">
+<div class="container mt-5 pt-5  ">
+<div class="row">
+      {{#each address}}
+<div class="col-md-3">
+  <div class="card border card-hover-add me-2 mb-2  " style="width: 18rem;">
   <div class="card-body">
   
-    <h5 class="card-subtitle mb-2 text-dark d-inline" >{{name}}</h5> <i class="d-inline fa-solid fa-trash text-danger float-end fs-5"></i>
+    <h5 class="card-subtitle mb-2 text-dark d-inline" >{{name}}</h5> <a href="/delete-address/{{index}}/{{../user._id}}"><i class="d-inline fa-solid fa-trash text-danger float-end fs-5"></i></a>
     <h6 class="card-subtitle mb-2 text-muted mt-2">{{address}}</h6>
     <h6 class="card-subtitle mb-2 text-muted">{{town}}</h6>
    
@@ -16,11 +18,12 @@
     <h6 class="card-subtitle mb-2 text-muted">{{pincode}}</h6>
      <h6 class="card-subtitle mb-2 text-muted">{{phone}}</h6>
       <h6 class="card-subtitle mb-2 text-muted">{{email}}</h6>
-    <a href="#" class="card-link">Card link</a>
-    <a href="#" class="card-link">Another link</a>
+    
   </div>
 </div>
+</div>
     {{/each}}
+</div>
 </div>
 {{else}}
 <div class="container bg-img-address d-flex justify-content-center" style="width: 100%;height: 70vh;">
