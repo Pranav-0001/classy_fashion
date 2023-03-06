@@ -7,30 +7,30 @@
             <div class="col-md-8">
                 <h4 class="pb-4">Billing Address</h4>
                 <label for="">First name</label><br>
-                <input class="plc-inp" type="text" name="fname" id="name"><br>
+                <input class="plc-inp" type="text" name="fname" id="name" value="{{address.fname}}"><br>
                 <label for="">Last name</label><br>
-                <input class="plc-inp" type="text" name="lname" id="name"><br>
+                <input class="plc-inp" type="text" name="lname" id="name" value="{{address.lname}}"><br>
                 <label for="">State</label><br>
                 <select class="plc-inp" name="state" id="" style="height: 30px;">
-                    <option value="Kerala">Kerala</option>
+                    <option {{#if (eq address.state 'Kerala')}} selected {{/if}}value="Kerala">Kerala</option>
                     <option value="">Kerala</option>
                 </select><br>
                 <label for="">Address</label><br>
-                <textarea class="plc-inp" name="address" id="" cols="30" rows="5"></textarea><br>
+                <textarea class="plc-inp" name="address" id="" cols="30" rows="5">{{address.address}}</textarea><br>
                 <label for="">Pin code</label><br>
-                <input class="plc-inp" type="number" name="pincode" id="" ><br>
+                <input class="plc-inp" type="number" name="pincode" id="" value="{{address.pincode}}" ><br>
                 <label for="">Town/City</label><br>
-                <input class="plc-inp" type="text" name="town" id=""><br>
+                <input class="plc-inp" type="text" name="town" id="" value="{{address.town}}"><br>
                 <label for="">Phone Number</label><br>
-                <input class="plc-inp" type="text" name="phone" id=""><br>
+                <input class="plc-inp" type="text" name="phone" id="" value="{{address.phone}}"><br>
                 <label for="">Email Address</label><br>
-                <input class="plc-inp" type="text" name="email" id=""><br>
+                <input class="plc-inp" type="text" name="email" id="" value="{{address.email}}"><br>
 
                 <input type="checkbox" class="mt-3" name="save" id="" style=" width:20px ;height:20px" value=true><span
                     class="ps-2 mb-2" for="">Save this address</span>
                     <br>
                 {{#if user.address}}
-                <a href="">Select from saved address</a>
+                <a href="/place-order/select-address/{{user._id}}">Select from saved address</a>
                 {{/if}}
             </div>
             <div class="col-md-4 mt-3">

@@ -284,6 +284,14 @@ router.get('/orderdetails/:id([0-9a-fA-F]{24})',verifyLogin,async(req,res)=>{
   res.render('admin/order-details',{order})
   
 })
+router.post('/update-order-status/:id',(req,res)=>{
+  
+  adminHelper.changeOrderStatus(req.params.id,req.body)
+  res.redirect('/admin/orderdetails/'+req.params.id)
+})
+router.get('/submit-order-request/:set/:id',(req,res)=>{
 
+adminHelper.orderReqSub(req.params.set,req.params.id)
+})
 module.exports = router;
   

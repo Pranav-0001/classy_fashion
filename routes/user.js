@@ -199,10 +199,14 @@ router.post('/add-to-cart/:id', verifyLogin, (req, res) => {
 router.post('/change-quantity',(req,res)=>{
   userHelper.changeQuantity(req.body).then(async(response)=>{
     let total=await userHelper.getTotalAmount(req.session.user._id)
+    let cartCount = await userHelper.cartCount(req.session.user._id)
+  
+  
+  if(cartCount>0){
     let savings=total.total-total.disTotal
     response.total=total
     response.disc=Math.floor((savings*100)/total.total)
-    
+  }
     res.json(response)
   })
 })
@@ -218,9 +222,10 @@ router.get('/place-order',verifyLogin,async(req,res)=>{
   let cartProducts=await userHelper.getCartProducts(req.session.user._id)
   let totalPrice=await userHelper.getTotalAmount(req.session.user._id)
   totalPrice.saving=totalPrice.total-totalPrice.disTotal
-  
-  res.render('user/placeOrder',{totalPrice,user,Err})
+  let address=req.session.address
+  res.render('user/placeOrder',{totalPrice,user,Err,address})
   req.session.placeOrderErr=null
+  req.session.address=null
 })
 
 router.get('/place-order-success-page',(req,res)=>{
@@ -237,8 +242,8 @@ router.post('/place-order',async(req,res)=>{
   let totalPrice=await userHelper.getTotalAmount(req.session.user._id)
   userHelper.placeOrder(req.body,userId,cartProducts,totalPrice,username).then(()=>{
     
-      res.render('user/order-success',{user:req.session.user})
-     
+    res.render('user/order-success',{user:req.session.user})
+    
      
   })  
 })
@@ -335,8 +340,35 @@ router.post('/add-address/:id',(req,res)=>{
 })
 
 router.get('/delete-address/:index/:id',(req,res)=>{
-  userHelper.deleteAddress(req.params.index,req.params.id).then(()=>{
+  userHelper.deleteAddress(req.params.index,req.session.user._id).then(()=>{
     res.redirect('/address-manage')
+  })
+})
+
+router.get('/cancel-order/:id([0-9a-fA-F]{24})',(req,res)=>{
+  userHelper.cancelOrderProducts(req.params.id).then((orderData)=>{
+    res.render('user/cancel-order',{orderData})
+  })
+  
+})
+
+router.post('/cancel-order/:id',(req,res)=>{
+  userHelper.cancelOrder(req.params.id,req.body).then(()=>{
+    res.redirect('/orders')
+  })
+})
+
+router.get('/place-order/select-address/:id',(req,res)=>{
+  userHelper.getUserAddress(req.session.user._id).then((address)=>{
+
+    res.render('user/select-address',{address,user:req.session.user,address})
+  })
+})
+
+router.get('/selected-address/:id',(req,res)=>{
+  userHelper.getSelectedAddress(req.session.user._id,req.params.id).then((address)=>{
+    req.session.address=address
+    res.redirect('/place-order')
   })
 })
 

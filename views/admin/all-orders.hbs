@@ -7,17 +7,19 @@
       <th scope="col">Items</th>
       <th scope="col">Total</th>
       <th>Discount Total</th>
+      <th>Order Status</th>
       <th>Payment</th>
     </tr>
   </thead>
   <tbody>
     {{#each orders}}
-    <tr onclick="window.location.href='/admin/orderdetails/{{_id}}'">
+    <tr {{#if (eq orderStatus "userCancelPending")}} class="bg-warning" {{/if}} {{#if (eq orderStatus "adminAcceptCancel")}} class="bg-danger text-light" {{/if}} onclick="window.location.href='/admin/orderdetails/{{_id}}'">
 
       <td>{{username}}</td>
       <td>{{products.length}}</td>
       <td>{{subTotal}}</td>
       <td>{{discTotal}}</td>
+      <td >{{orderStatus}}</td>
       <td>{{Address.payment}}</td>
     </tr>
     {{/each}}

@@ -344,5 +344,26 @@ module.exports={
             let order=await collections.orderCollection.findOne({_id:orderId})
             resolve(order)
         })
+    },
+    changeOrderStatus:(orderId,status)=>{
+        return new Promise(async(resolve, reject) => {
+            
+            collections.orderCollection.updateOne({_id:ObjectId(orderId)},{$set:{orderStatus:status.status}}).then((res)=>{
+                resolve()
+            })
+        })
+    },
+    orderReqSub:(status,id)=>{
+        return new Promise((resolve, reject) => {
+            if(status=='true'){
+                collections.orderCollection.updateOne({_id:ObjectId(id)},{$set:{orderStatus:"adminAcceptCancel"}}).then((res)=>{
+                    resolve()
+                })
+            }else{
+                collections.orderCollection.updateOne({_id:ObjectId(id)},{$set:{orderStatus:"adminRejectCancel"}}).then((res)=>{
+                    resolve()
+                })
+            }
+        })
     }
 }

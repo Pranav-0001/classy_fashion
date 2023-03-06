@@ -360,6 +360,7 @@ module.exports={
                 products:cartProducts,
                 subTotal:totalPrice.total,
                 discTotal:totalPrice.disTotal,
+                orderStatus:"orderPlaced"
                 
             }
             
@@ -387,7 +388,8 @@ module.exports={
            
             let singleProductData={
                 productData:order.products[index],
-                address:order.Address
+                address:order.Address,
+                status:order.orderStatus
             }
             resolve(singleProductData);
         })
@@ -465,7 +467,7 @@ module.exports={
                 name:addressData.fname+' '+addressData.lname,
                 address:addressData.address,
                 town:addressData.town,
-                pincode:addressData.pincode,
+                pincode:addressData.pincode, 
                 state:addressData.state,
                 phone:addressData.phone,
                 email:addressData.email,
@@ -479,11 +481,60 @@ module.exports={
     },
     deleteAddress:(indexId,userId)=>{
         return new Promise((resolve, reject) => { 
-            indexId=parseInt(indexId)
+            
             collections.userCollection.updateOne({_id:ObjectId(userId)},{$pull:{address:{index:indexId}}}).then((res)=>{
                 resolve()
             })
         })
+    },
+    cancelOrderProducts:(orderId)=>{
+        return new Promise(async(resolve, reject) => {
+            let order=await collections.orderCollection.findOne({_id:ObjectId(orderId)})
+            resolve(order);
+        })
+    },
+    cancelOrder:(orderId,cancelData)=>{
+        return new Promise((resolve, reject) => {
+            collections.orderCollection.updateOne({_id:ObjectId(orderId)},{$set:{
+                orderStatus:"userCancelPending",
+                reason:cancelData.reason,
+                feedback:cancelData.feedback
+            }}).then(()=>{
+                resolve()
+            })
+        })
+    },
+    getSelectedAddress:(userId,id)=>{
+        return new Promise(async(resolve, reject) => {
+            let selAddress=await collections.userCollection.aggregate([
+                {
+                    $match:{_id:ObjectId(userId)}
+                },
+                {
+                    $unwind:'$address'
+                },
+                {
+                    $match:{'address.index':id}
+                }
+            ]).toArray()
+           
+           let data=selAddress[0].address
+            let name=selAddress[0].address.name
+            let arr=name.split(' ')
+            
+            let address={
+                fname:arr[0],
+                lname:arr[1],
+                address:data.address,
+                town:data.town,
+                pincode:data.pincode,
+                state:data.state,
+                phone:data.phone,
+                email:data.email
+            }
+            resolve(address);
+        })
+
     }
     
-}
+} 
